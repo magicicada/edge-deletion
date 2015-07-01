@@ -32,10 +32,22 @@ def maximum_component_size(graph):
     return maximum
 
 # Checks whether the maximum component size is less than a given number
-# Input - an integer to check against
+# Input - a graph object and an integer to check against
 # Output - a boolean value:
 #     True -> the maximum component size is less than or equal to the number
 #     False -> the maximum component size is more than the number
 def maximum_at_most(graph, number):
     maximum = maximum_component_size(graph)
     return maximum <= number
+
+# Checks if a given set of edges of a graph disconnect the graph into
+# components of some maximum size. No changes to the original graph are made.
+# Input - a graph object, an integer to check against and a set of edges to delete
+def is_edge_set_disconnecting(graph, number, edges):
+    # Create a copy to preserve original graph
+    graph_copy = graph.copy()
+    # Remove all edges in the set of edges
+    for edge in edges:
+        graph_copy.remove_edge(edge[0], edge[1])
+    # Check if condition has been satisfied
+    return maximum_at_most(graph_copy, number)
