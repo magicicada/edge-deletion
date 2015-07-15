@@ -19,7 +19,7 @@ class SearchTree:
 
     @staticmethod
     def spawn_children(node):
-        if len(node.edges)>1:
+        if len(node.get_edges())>1:
             for index in range(len(node.edges)):
                 child_node = nd.Node(node,node.edges[:index]+node.edges[index+1:])
                 node.add_child(child_node)
@@ -49,3 +49,4 @@ class SearchTree:
             children = current_node.get_children()
             for child in children:
                 queue.put(child)
+        return "Impossible"
