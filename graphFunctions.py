@@ -43,6 +43,9 @@ def maximum_at_most(graph, number):
 # Checks if a given set of edges of a graph disconnect the graph into
 # components of some maximum size. No changes to the original graph are made.
 # Input - a graph object, an integer to check against and a set of edges to delete
+# Output - a boolean value:
+#     True -> the maximum component size is less than or equal to the number
+#     False -> the maximum component size is more than the number
 def is_edge_set_disconnecting(graph, number, edges):
     # Create a copy to preserve original graph
     graph_copy = graph.copy()
@@ -51,3 +54,18 @@ def is_edge_set_disconnecting(graph, number, edges):
         graph_copy.remove_edge(edge[0], edge[1])
     # Check if condition has been satisfied
     return maximum_at_most(graph_copy, number)
+
+# Checks if the graph composed of a given set of edges and the vertices
+# they connect form a graph of component size less than a given number
+# Input - an integer to check against and a set of edges to form the graph
+# Output - a boolean value:
+#     True -> the maximum component size is less than or equal to the number
+#     False -> the maximum component size is more than the number
+def is_edge_set_disconnected(number, edges):
+    # Create a new empty graph
+    graph = nx.Graph()
+    # Add the given edges to the new graph
+    for edge in edges:
+        graph.add_edge(edge[0],edge[1])
+    # Check what the maximum component size is
+    return maximum_at_most(graph, number)
