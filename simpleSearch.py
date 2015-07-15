@@ -16,6 +16,9 @@ def simple_search(graph, maxSize):
                 minRemovals = len(edges)
     return minRemovals
 
+def A_star_search(graph, maxSize):
+    
+
 # A function to compute the powerset of a given set
 # Input - a set of items (any collection should work)
 # Output - a generator that gives all of the items
