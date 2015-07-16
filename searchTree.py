@@ -18,17 +18,17 @@ class SearchTree:
         return self.root == None
 
     @staticmethod
-    def spawn_children(node):
-        if len(node.get_edges())>1:
-            for index in range(len(node.edges)):
-                child_node = nd.Node(node,node.edges[:index]+node.edges[index+1:])
+    def spawn_children(node, number):
+        if len(node.get_edges()) >= number:
+            for index in range(node.get_rightmost_deleted(),len(node.edges)):
+                child_node = nd.Node(node,node.edges[:index]+node.edges[index+1:],index)
                 node.add_child(child_node)
-                SearchTree.spawn_children(child_node)
+                SearchTree.spawn_children(child_node, number)
 
-    def fill(self, edges):
+    def fill(self, edges, number):
         if self.is_empty():
-            root = self.set_root(nd.Node(None, edges))
-            SearchTree.spawn_children(root)
+            root = self.set_root(nd.Node(None, edges, 0))
+            SearchTree.spawn_children(root, number)
 
     def __str__(self):
         return self.root
@@ -50,3 +50,7 @@ class SearchTree:
             for child in children:
                 queue.put(child)
         return "Impossible"
+
+tree = SearchTree()
+tree.fill([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],10)
+print tree.root

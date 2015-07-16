@@ -1,9 +1,10 @@
 class Node:
 
-    def __init__(self, parent, edges):
+    def __init__(self, parent, edges, rightmost_deleted):
         self.parent = parent
         self.edges = edges
         self.children = []
+        self.rightmost_deleted = rightmost_deleted
 
     def add_child(self, node):
         self.children.append(node)
@@ -16,6 +17,9 @@ class Node:
 
     def get_children(self):
         return self.children
+
+    def get_rightmost_deleted(self):
+        return self.rightmost_deleted
 
     def __str__(self):
         return ', '.join(map(str,self.edges)) + "\n" + ', '.join(map(str,self.children))
