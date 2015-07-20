@@ -23,7 +23,7 @@ class Node:
 
     def spawn_children(self, min_num_edges=0):
         children = []
-        if len(self.edges) >= min_num_edges:
+        if len(self.edges) > min_num_edges:
             for index in range(self.rightmost_deleted,len(self.edges)):
                 child_node = Node(self.edges[:index]+self.edges[index+1:],index)
                 children.append(child_node)
