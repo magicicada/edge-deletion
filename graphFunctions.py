@@ -36,9 +36,9 @@ def maximum_component_size(graph):
 # Output - a boolean value:
 #     True -> the maximum component size is less than or equal to the number
 #     False -> the maximum component size is more than the number
-def maximum_at_most(graph, number):
+def maximum_at_most(graph, comp_size_limit):
     maximum = maximum_component_size(graph)
-    return maximum <= number
+    return maximum <= comp_size_limit
 
 # Checks if a given set of edges of a graph disconnect the graph into
 # components of some maximum size. No changes to the original graph are made.
@@ -46,14 +46,14 @@ def maximum_at_most(graph, number):
 # Output - a boolean value:
 #     True -> the maximum component size is less than or equal to the number
 #     False -> the maximum component size is more than the number
-def is_edge_set_disconnecting(graph, number, edges):
+def is_edge_set_disconnecting(graph, comp_size_limit, edges):
     # Create a copy to preserve original graph
     graph_copy = graph.copy()
     # Remove all edges in the set of edges
     for edge in edges:
         graph_copy.remove_edge(edge[0], edge[1])
     # Check if condition has been satisfied
-    return maximum_at_most(graph_copy, number)
+    return maximum_at_most(graph_copy, comp_size_limit)
 
 # Checks if the graph composed of a given set of edges and the vertices
 # they connect form a graph of component size less than a given number
@@ -61,11 +61,11 @@ def is_edge_set_disconnecting(graph, number, edges):
 # Output - a boolean value:
 #     True -> the maximum component size is less than or equal to the number
 #     False -> the maximum component size is more than the number
-def is_edge_set_disconnected(number, edges):
+def is_edge_set_disconnected(comp_size_limit, edges):
     # Create a new empty graph
     graph = nx.Graph()
     # Add the given edges to the new graph
     for edge in edges:
         graph.add_edge(edge[0],edge[1])
     # Check what the maximum component size is
-    return maximum_at_most(graph, number)
+    return maximum_at_most(graph, comp_size_limit)
