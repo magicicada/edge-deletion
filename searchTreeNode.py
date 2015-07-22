@@ -1,3 +1,5 @@
+import math
+
 class Node:
 
     def __init__(self, edges, rightmost_deleted):
@@ -28,6 +30,10 @@ class Node:
                 child_node = Node(self.edges[:index]+self.edges[index+1:],index)
                 children.append(child_node)
         return children
+
+    def enough_deletions_allowed(self, comp_size_limit, min_remaining, num_vertices):
+        num_edges_allowed = math.ceil(float(num_vertices)/comp_size_limit)*(comp_size_limit*(comp_size_limit-1)/2)
+        return num_edges_allowed >= min_remaining
 
     def __str__(self):
         return ', '.join(map(str,self.edges)) + "\n" + ', '.join(map(str,self.children))

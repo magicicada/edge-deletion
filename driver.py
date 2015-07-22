@@ -16,7 +16,7 @@ print "Starting search..."
 start_time = time.time()
 
 # Change search method HERE --v
-minEdges = tree.breadth_first_search(15,3)
+minEdges = tree.breadth_first_search(15,4)
 
 elapsed_time = time.time()-start_time
 print "Miminum deletions necessary are: ", minEdges
