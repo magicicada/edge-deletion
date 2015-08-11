@@ -1,4 +1,5 @@
 import math
+import networkx as nx
 
 class Node:
 
@@ -7,6 +8,7 @@ class Node:
         self.edges = edges
 #        self.children = []
         self.rightmost_deleted = rightmost_deleted
+#        self.last_removed_edge = last_removed_edge
 
 #    def add_child(self, node):
 #        self.children.append(node)
@@ -35,9 +37,16 @@ class Node:
         num_edges_allowed = math.ceil(float(num_vertices)/comp_size_limit)*(comp_size_limit*(comp_size_limit-1)/2)
         return num_edges_allowed >= min_remaining
 
+    def min_degree_of_end_vertices_of_last_deleted(self):
+        graph = nx.Graph()
+        for edge in self.edges:
+            graph.add_edge(edge)
+        graph.add_edge()
+
     def __str__(self):
-        return ', '.join(map(str,self.edges)) + "\n" + ', '.join(map(str,self.children))
+        return ', '.join(map(str,self.edges)) + "\n"
     
+#+ ', '.join(map(str,self.children))
 
 #node = Node(None,[1,2,3],0)
 #print node

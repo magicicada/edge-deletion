@@ -47,6 +47,10 @@ class SearchTree:
                     queue.put(child)
         return "Impossible"
 
+    def A_star_search(self, comp_size_limit, max_deletions):
+        all_edges = self.root.get_edges()
+        min_remaining = len(all_edges) - max_deletions
+
 #tree = SearchTree()
 #edges = [[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[10,12],[9,10],[10,11],[11,12],[12,13],[13,14],[14,15],[15,16],[16,17],[17,18],[18,19],[19,20]]
 #tree.set_root(nd.Node(edges, 0))
