@@ -5,14 +5,15 @@ import networkx as nx
 # of the two vertices at the endpoints of the edge that the
 # tuple represents.
 # Input - the filename of the file holding the data for the edges
+#       - the delimiter between the two vertices i.e. ",", "-" or " ", etc.
 # Output - a graph object with all of the vertices and edges.
-def read_edges_from_file(filename):
+def read_edges_from_file(filename, delimiter):
     f = open(filename, "r")
     graph = nx.Graph()
     currentLine = f.readline()
     while(currentLine != ""):
         # Remove unwanted characters and add in the new edge
-        cleanedLine = currentLine.strip().split(",")
+        cleanedLine = currentLine.strip().split(delimiter)
         firstVertex = cleanedLine[0]
         secondVertex = cleanedLine[1]
         graph.add_edge(firstVertex,secondVertex)
