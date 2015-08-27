@@ -8,6 +8,9 @@ INFINITY = 999999999
 
 def noBigSteps(candidate):
     sortV =sorted(candidate)
+    # A check to make sure no duplicates are allowed
+    if 1 not in candidate:
+        return False
     for i in range(0, len(sortV) - 1):
         if sortV[i+1] - sortV[i] > 1:
             # print "" 
@@ -21,17 +24,17 @@ def noBigSteps(candidate):
 
 def nextPartition(current, maxH, size):
     # first do sanity check for done
-    last = True
+    #last = True
     # print "considering current "
     # print current
-    for i in range(0, len(current)-1):
-        if current[i+1] != current[i]+1:
+    #for i in range(0, len(current)-1):
+    #    if current[i+1] != current[i]+1:
             # print "not found to be the last"
-            last = False
+    #        last = False
     # print "the last check value is " + str(last)
     # print "the first val check value is " + str(current[0] == 1)
-    if last and current[0] == 1:
-        return "DONE"
+    #if last and current[0] == 1:
+    #    return "DONE"
     
     newPartition = []
     canDo = False
@@ -48,7 +51,7 @@ def nextPartition(current, maxH, size):
                 for j in range(i+1, len(newPartition)):
                     newPartition[j] = 1
                 break
-        if not canDo:
+        if not canDo: ##
             newPartition = "DONE"
     # print newPartition
     return newPartition
@@ -67,19 +70,23 @@ def getAllPartitions(bag, maxH):
     while currentPartition != "DONE":
         partitions.append(currentPartition)
         currentPartition = nextPartition(currentPartition, maxH, size)
-    # print partitions
+    # print "partitions= ",partitions
     goodPartitions = []
     for guy in partitions:
-        guy = sorted(guy)
+        # print ">", guy
+        #guy = sorted(guy)
         if guy not in goodPartitions and max(Counter(guy).values())<= maxH:
+            # print "=>", guy
             if noBigSteps(guy):
                 goodPartitions.append(guy)
                 # print guy
     return goodPartitions
-        
+
+# print getAllPartitions([1,2,3,4],3)
+
 # changes numerical partition encodings into actual bags
 # I'm not checking to see if the partitions are valid, yet
-# will return a list of lists of lists
+# will return a list of lists of lists    #added a weak validity check
 def bagEm(partitionList, bag):
     partitioned = []
     for guy in partitionList:
@@ -88,10 +95,16 @@ def bagEm(partitionList, bag):
             if guy[i] not in dictOfParts:
                 dictOfParts[guy[i]] = []
             dictOfParts[guy[i]].append(bag[i])
-        partitioned.append(dictOfParts.values())
+        if sorted(dictOfParts.values()) not in partitioned:
+            partitioned.append(sorted(dictOfParts.values()))
     return partitioned
 
-# print bagEm(getAllPartitions([1, 2, 3, 4], 3), [1, 2, 3, 4])
+# print bagEm(getAllPartitions([1, 2, 3, 4], 4), [1, 2, 3, 4])
+
+# A weak validity check for unbagged partition lists
+# Should prevent double counting.
+def partition_not_repeating(partitionList):
+    pass
 
 def nextFunction(current, maxVal):
     newPartition = []
@@ -131,24 +144,25 @@ def getAllFunctions(partition, maxH):
     while currentFunction != "DONE":
         
         if currentFunction != "DONE":
-            # print "check validity of " + str(currentFunction) + " for " + str(guy)
+            #print "check validity of " + str(currentFunction) + " for " + str(guy)
             isValid = True
             for i in range(0, len(currentFunction)):
                 # print "comparing " + str(currentFunction[i]) + " to " + str(len(guy[i]))
-                if currentFunction[i] > len(partition[i]):
+                if currentFunction[i] < len(partition[i]):
                     isValid = False
             if isValid:
-                # print "ADDED!!"
+                #print "ADDED!!"
                 dictThis = {}
                 for i in range(0, len(currentFunction)):
                     dictThis[tuple(partition[i])] = currentFunction[i]
                 allFunctions.append(dictThis)
             currentFunction = nextFunction(currentFunction, maxH)    
-    return allFunctions        
-        # print " a possible function " + str(currentFunction)
-    # print "done generating functions"
-    
+           
+        #print " a possible function " + str(currentFunction)
+    #print "done generating functions"
+    return allFunctions 
 
+# print getAllFunctions([[1,2],[3,4]], 3)
 
 def generateAllStates(t, treeDecomp, bag, graph, h):
     states = []
@@ -156,6 +170,7 @@ def generateAllStates(t, treeDecomp, bag, graph, h):
     # print allPartitions
     # allPartitions = [[allPartitions[3]]]
     for p in allPartitions:
+        # print "p=", p, "h=", h
         allFunctions = getAllFunctions(p, h)
         # print "all functions is"
         # print allFunctions
@@ -163,13 +178,16 @@ def generateAllStates(t, treeDecomp, bag, graph, h):
              states.append((p, c))
     return states
 
+# print generateAllStates(None, None, [1,2,3,4], None, 3)
+
 def inSamePart(partition, u, v):
     for guy in partition:
         if u in guy and v in guy:
             return True
-    print "checking partition spans, found " + str(u) + str(v) + " are not in the same part of " + str(partition)
+    #print "checking partition spans, found " + str(u)+ "-" + str(v) + " are not in the same part of " + str(partition)
     return False
 
+# Number of things not contained in any one given partition
 def countSpans(graph, bag, partition):
     subgraph = graph.subgraph(bag)
     count = 0
@@ -177,6 +195,8 @@ def countSpans(graph, bag, partition):
         if not inSamePart(partition, u, v):
             count = count + 1
     return count
+
+# The number of edges adjacent to v that do not connect v to nodes in the same partition
 def countSpansSingle(graph, bag, partition, v):
     subgraph = graph.subgraph(bag)
     count = 0
@@ -184,98 +204,120 @@ def countSpansSingle(graph, bag, partition, v):
         if not inSamePart(partition, u, v):
             count = count + 1
     return count
-    
 
+def sorted_dictionary_to_string(dictionary):
+    keys = sorted(dictionary.keys())
+    string = ""
+    for key in keys:
+        string = string + str(key) + ": " + str(dictionary[key]) + ", "
+    return "{" + string[:-2] + "}"
+    
 def sigOfLeaf(t, treeDecomp, bag, graph, h, k):
     delValues = {}
-    print "Generating states"
+    #print "Generating states"
     allStates = generateAllStates(t, treeDecomp, bag, graph, h)
-    print "considering each state"
+    #print "considering each state" # Here
     for (p, c) in allStates:
-        subgraph = graph.subgraph(bag)
-        print "counting spanning edges within " + str(bag)
-        print " for parition " + str(p)
-        countEdges = countSpans(graph, bag, p)
-        print "count is " + str (countEdges)
+        subgraph = graph.subgraph(bag) # Move this
+        #print "-counting spanning edges within " + str(bag)
+        #print " for parition " + str(p)
+        #print " and for func " + str(c)
+        countEdges = countSpans(graph, bag, p) # Pass only subgraph
+        #print " count is " + str (countEdges)
         if countEdges <= k:
-            delValues[(str(p), str(c))] = countEdges
+            delValues[(str(p), sorted_dictionary_to_string(c))] = countEdges
         else:
-            delValues[(str(p), str(c))] = INFINITY
+            delValues[(str(p), sorted_dictionary_to_string(c))] = INFINITY
     return delValues
+# G = nx.Graph()
+# G.add_edge(1,2)
+# G.add_edge(3,2)
+# G.add_edge(3,4)
+# print sigOfLeaf(None, None, [1,2,3,4], G, 3, 2)
 
 def generateAllRefinements(part, v, h):
-    print "in generateAllRef, we've received " + str(part)
+    #print "in generateAllRef, we've received " + str(part)
     if part == [v]:
         return []
     toPartition = [x for x in part if x != v]
-    print "in generateAllRef, we need to partition " + str(toPartition)
+    #print "in generateAllRef, we need to partition " + str(toPartition)
     return bagEm(getAllPartitions(toPartition, h), toPartition)
+
+# print generateAllRefinements([1,2,3,4],3,3)
 
 def sigOfIntroduce(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h, k):
     delValues  = {}
-    print "doing the introduce node"
-    print "calculating v"
+    #print "doing the introduce node"
+    #print "calculating v"
     v = list(set(bag) - set(childBag))[0]
-    print "calculating all states"
+    #print "calculating all states"
     allStates = generateAllStates(t, treeDecomp, bag, graph, h)
-    print "for each guy in allStates"
+    #print "for each guy in allStates"
     for (p, c) in allStates:
-        # genearating the inherited states
-        print "==========considering " + str((p, c)) + " from allStates========"
+        # generating the inherited states
+        #print "==========considering " + str((p, c)) + " from allStates========"
         inherited = []
         Xr = []
-        print "looking for Xr"
+        #print "looking for Xr"
         for dude in p:
             if v in dude:
                 Xr  = dude
-        print "Xr is " + str(Xr)
+        #print "Xr is " + str(Xr)
         if Xr == []:
-            print "problem: cannot find a partition containing v in introduce proceedure"
+            print "problem: cannot find a partition containing v in introduce procedure"
+        # Generate refinements
         remainderP = copy.deepcopy(p)
         remainderP.remove(Xr)
-        print "remainderP is " + str(remainderP)
-        print "Generating refinements"
+        #print "remainderP is " + str(remainderP)
+        #print "Generating refinements"
         refinements  =  generateAllRefinements(Xr, v, h)
-        print "for each refinement of "
-        print refinements
-        for refinedPart in refinements:
-            print "for refinedPart " + str(refinedPart)
-            pPrime = remainderP + refinedPart
+        #print "for each refinement of "
+        #print refinements
+        for refinedPart in refinements: # for refinement in refinements?
+            #print "for refinedPart " + str(refinedPart)
+            pPrime = remainderP + refinedPart # P'
             allRefinedFunctions = getAllFunctions(pPrime, h)
-            print "all refined functions is "+ str (allRefinedFunctions)
-            for guy in allRefinedFunctions:
-                print "now to check the sum condition in " + str(guy)
+            #print "all refined functions is "+ str (allRefinedFunctions)
+            for guy in allRefinedFunctions: # This is no longer in pseudocode, on purpose?
+                #print "now to check the sum condition in " + str(guy)
                 # check sum condition: error in pseudocode here?TODO
                 sumOf = 0
                 for entry in refinedPart:
-                    print "adding in the function for " + str(entry) + " which is " + str(guy[tuple(entry)])
+                    #print "adding in the function for " + str(entry) + " which is " + str(guy[tuple(entry)])
                     sumOf = sumOf + guy[tuple(entry)]
-                print "total sum is " + str(sumOf)
-                print "which we will compare to " + str(c[tuple(Xr)]-1)
+                #print "total sum is " + str(sumOf)
+                #print "which we will compare to " + str(c[tuple(Xr)]-1)
                 if sumOf == c[tuple(Xr)]-1:
-                    inherited.append((pPrime, guy))
-        print "for state " + str((p, c)) + " the inherited list is "
-        print str(inherited)
+                    inherited.append((sorted(pPrime), guy))
+        #print "for state " + str((p, c)) + " the inherited list is "
+        #print str(inherited)
         minValue = INFINITY
-        for (pPrime, cPrime) in inherited:
-            print "looking at " + str((pPrime, cPrime)) + " in inherited"
-            print "the del values are"
-            print delValuesChild[(str(pPrime), str(cPrime))]
-            value = delValuesChild[(str(pPrime), str(cPrime))] + countSpansSingle(graph, bag, pPrime, v)
+        for (pPrime, cPrime) in inherited: # t' no longer used?
+            #print "looking at " + str((pPrime, cPrime)) + " in inherited"
+            #print "the del values are"
+            #print delValuesChild[(str(pPrime), str(cPrime))]
+            value = delValuesChild[(str(pPrime), sorted_dictionary_to_string(cPrime))] + countSpansSingle(graph, bag, pPrime, v)
             if value < minValue:
                 minValue = value
         if minValue <= k:
-            delValues[(str(p), str(c))] = minValue
+            delValues[(str(sorted(p)), sorted_dictionary_to_string(c))] = minValue
         else:
-            delValues[(str(p), str(c))] = INFINITY
+            delValues[(str(sorted(p)), sorted_dictionary_to_string(c))] = INFINITY
         
-    return delValues       
-     
+    return delValues
+
+def is_function_valid(c):
+    valid = True
+    for Xr in c:
+        if c[Xr] < len(Xr):
+            valid = False
+    return valid
 
 def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h):
     delValues  = {}
     v = list(set(childBag) - set(bag))[0]
     allStates = generateAllStates(t, treeDecomp, bag, graph, h)
+    #print "Allstates = ", allStates
     inheritedSets = []
     for (p, c) in allStates:
 #     generating the inherited sigma set
@@ -291,17 +333,29 @@ def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h):
                         newPart.append(copy.deepcopy(secondPart) + [v])
                 inheritedPartitions.append(newPart)
         # add it in its own part
-        inheritedPartitions.append(copy.deepcopy(p).append([v]))
+        temp = copy.deepcopy(p)
+        temp.append([v])
+        inheritedPartitions.append(temp)
 
-        
+        #print "inherited = ", inheritedPartitions        
         for pPrime in inheritedPartitions:
+            #print "pprime=", pPrime
             allCPrime = []
             cPrime = {}
             vSingleton = False
             for part in pPrime:
-                if pPrime != [v]:
-                    partWithoutV = copy.deepcopy(part) - [v]
-                    cPrime[part] = c[partWithoutV]
+                if part != [v]:
+                    #print "part= ", copy.deepcopy(part)
+                    #print "v= ", v
+                    partWithoutV = copy.deepcopy(part)
+                    if v in partWithoutV:
+                        #print "v in partwithoutV"
+                        partWithoutV.remove(v)
+                    #print "partwithoutV= ",partWithoutV
+                    #print "cc=", c
+                    #print "c=",c[tuple(partWithoutV)]
+                    cPrime[tuple(part)] = c[tuple(partWithoutV)] #it is possible to get incorrect fnc here
+                    #print "cp=", cPrime
                 else:
                     vSingleton = True
             if not vSingleton:
@@ -310,18 +364,68 @@ def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h):
                 for i in range(h+1):
                     if i <= h and i >= 1:
                         newCPrime = copy.deepcopy(cPrime)
-                        newCPrime[[v]] = i
+                        newCPrime[tuple([v])] = i
                         allCPrime.append(newCPrime)
             
-            for c in allCPrime:
-                inheritedSets
+            for cPrime in allCPrime:
+                #print "cprime", cPrime
+                if is_function_valid(cPrime):
+                    inheritedSets.append((pPrime,cPrime))
+                #else:
+                    #print "State not valid: ", pPrime, cPrime
+
+        minValue = INFINITY
+        for (pPrime, cPrime) in inheritedSets:
+            #print "pPrime", pPrime, "cPrime", cPrime
+            value = delValuesChild[(str(pPrime),sorted_dictionary_to_string(cPrime))]
+            if value < minValue:
+                minValue = value
+
+        if minValue <= k:
+            delValues[str(p),sorted_dictionary_to_string(c)] = minValue
+        else:
+            delValues[str(p),sorted_dictionary_to_string(c)] = INFINITY
+
+    return delValues
             
-#             NOT COMPLETED
+#             MAYBE COMPLETED
 
 
-def sigOfJoin(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h):
-    delValues = {}
+def sigOfJoin(t, treeDecomp, bag, graph, childT1, childT2, childBag1, childBag2, delValuesChild1, delValuesChild2, h):
+    delValues = {} # None, None, bag, graph, None, None, childBag1, childBag2, delValuesChild1, delValuesChild2, h
+    allStates = generateAllStates(t, treeDecomp, bag, graph, h)
+
+    for (p,c) in allStates:
+        # generating the inherited join states
+        inheritedStates = []
+        p1 = copy.deepcopy(p)
+        p2 = copy.deepcopy(p)
+        # generate all function pairs
+        allFunctionPairs = []
+        allRefinedFunctions = getAllFunctions(p1, h)
+        for c1 in allRefinedFunctions:
+            for c2 in allRefinedFunctions:
+                for blockX in p:
+                    if c[tuple(blockX)] == c1[tuple(blockX)] + c2[tuple(blockX)] - len(blockX):
+                        allFunctionPairs.append((c1,c2))
         
+        # add state to inherited states
+        for (c1, c2) in allFunctionPairs:
+            inheritedStates.append(((p1,c1),(p2,c2)))
+
+        minValue = INFINITY
+        for ((p1,c1),(p2,c2)) in inheritedStates:
+            #print "1 del1=", delValuesChild1[str(p1), sorted_dictionary_to_string(c1)]
+            #print "2 del2=", delValuesChild2[str(p2),sorted_dictionary_to_string(c2)]
+            value = delValuesChild1[str(p1), sorted_dictionary_to_string(c1)] + delValuesChild2[str(p2),sorted_dictionary_to_string(c2)] - countSpans(graph, bag, p)
+            if value < minValue:
+                minValue = value
+
+        if minValue <= k:
+            delValues[(str(p),sorted_dictionary_to_string(c))] = minValue
+        else:
+            delValues[(str(p),sorted_dictionary_to_string(c))] = INFINITY
+            
     return delValues
 
 
@@ -332,12 +436,23 @@ graph  = nx.path_graph(25)
 h = 4
 k = 6
 NONSENSE = "nonsense"
-delValuesLeaf = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3,4], graph, h, k)
-print "+++++++FOR LEAF++++++++"
-for guy in delValuesLeaf:
-    print str(guy) + " | " + str(delValuesLeaf[guy])
-delValuesIntr = sigOfIntroduce(NONSENSE, NONSENSE, [1,2,3,4,5], graph, NONSENSE, [1,2,3,4], delValuesLeaf, h, k)
-print "+++++++Introduce++++++++"
-for guy in delValuesIntr:
-    if delValuesIntr[guy] != INFINITY:
-        print str(guy) + " | " + str(delValuesIntr[guy])
+#delValuesLeaf = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3], graph, h, k)
+#delValuesLeaf2 = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3,4], graph, h, k)
+#print "+++++++FOR LEAF++++++++"
+#for guy in delValuesLeaf:
+#    print str(guy) + " | " + str(delValuesLeaf[guy])
+#delValuesIntr = sigOfIntroduce(NONSENSE, NONSENSE, [1,2,3,4], graph, NONSENSE, [1,2,3], delValuesLeaf, h, k)
+#print "+++++++Introduce++++++++"
+#for guy in delValuesIntr:
+#    if delValuesIntr[guy] != INFINITY:
+#        print str(guy) + " | " + str(delValuesIntr[guy])
+#delValuesForget = sigOfForget(NONSENSE, NONSENSE, [1,2,3], graph, NONSENSE, [1,2,3,4], delValuesLeaf, h)
+#print "+++++++Forget++++++++"
+#for guy in delValuesForget:
+#    if delValuesForget[guy] != INFINITY:
+#        print str(guy) + " | " + str(delValuesForget[guy])
+#delValuesJoin = sigOfJoin(NONSENSE, NONSENSE, [1,2,3,4], graph, NONSENSE, NONSENSE, NONSENSE, NONSENSE, delValuesIntr, delValuesLeaf2, h)
+#print "+++++++Join++++++++"
+#for guy in delValuesJoin:
+#    if delValuesJoin[guy] != INFINITY:
+#        print str(guy) + " | " + str(delValuesJoin[guy])
