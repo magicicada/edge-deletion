@@ -1,0 +1,210 @@
+graph G {
+
+	v1 [label="93 86 "]
+	v2 [label="59 86 "]
+	v3 [label="58 59 "]
+	v4 [label="59 33 "]
+	v5 [label="12 33 "]
+	v6 [label="50 12 "]
+	v7 [label="48 12 "]
+	v8 [label="12 47 "]
+	v9 [label="12 46 "]
+	v10 [label="12 45 "]
+	v11 [label="44 12 "]
+	v12 [label="12 42 "]
+	v13 [label="12 41 "]
+	v14 [label="12 40 "]
+	v15 [label="12 39 "]
+	v16 [label="38 12 "]
+	v17 [label="37 12 "]
+	v18 [label="12 36 "]
+	v19 [label="50 35 \n12 "]
+	v20 [label="34 12 "]
+	v21 [label="12 32 "]
+	v22 [label="30 12 "]
+	v23 [label="22 12 "]
+	v24 [label="12 15 "]
+	v25 [label="12 11 "]
+	v26 [label="12 10 "]
+	v27 [label="12 49 \n36 "]
+	v28 [label="12 5 "]
+	v29 [label="43 12 \n32 "]
+	v30 [label="50 35 \n92 "]
+	v31 [label="48 103 "]
+	v32 [label="48 52 "]
+	v33 [label="48 98 "]
+	v34 [label="100 36 "]
+	v35 [label="35 78 "]
+	v36 [label="43 32 \n62 "]
+	v37 [label="32 62 \n61 "]
+	v38 [label="60 32 \n62 61 "]
+	v39 [label="32 31 "]
+	v40 [label="30 27 "]
+	v41 [label="22 23 "]
+	v42 [label="22 23 \n24 "]
+	v43 [label="15 17 "]
+	v44 [label="15 16 "]
+	v45 [label="15 19 "]
+	v46 [label="15 19 \n18 "]
+	v47 [label="81 10 "]
+	v48 [label="10 83 "]
+	v49 [label="82 10 "]
+	v50 [label="9 10 "]
+	v51 [label="49 99 "]
+	v52 [label="49 7 "]
+	v53 [label="5 2 "]
+	v54 [label="1 43 "]
+	v55 [label="85 52 "]
+	v56 [label="84 52 "]
+	v57 [label="51 52 "]
+	v58 [label="73 61 "]
+	v59 [label="74 61 "]
+	v60 [label="72 61 "]
+	v61 [label="27 29 "]
+	v62 [label="28 27 "]
+	v63 [label="23 55 \n24 "]
+	v64 [label="87 17 "]
+	v65 [label="76 17 "]
+	v66 [label="75 17 "]
+	v67 [label="88 17 "]
+	v68 [label="69 16 "]
+	v69 [label="21 16 "]
+	v70 [label="68 16 "]
+	v71 [label="57 16 "]
+	v72 [label="14 19 \n18 "]
+	v73 [label="83 101 "]
+	v74 [label="95 7 "]
+	v75 [label="20 7 "]
+	v76 [label="7 102 "]
+	v77 [label="96 7 "]
+	v78 [label="6 7 "]
+	v79 [label="2 4 "]
+	v80 [label="3 2 "]
+	v81 [label="1 26 "]
+	v82 [label="1 0 "]
+	v83 [label="73 77 "]
+	v84 [label="94 55 "]
+	v85 [label="76 54 "]
+	v86 [label="97 57 "]
+	v87 [label="57 70 "]
+	v88 [label="56 57 "]
+	v89 [label="14 63 "]
+	v90 [label="14 91 "]
+	v91 [label="14 90 "]
+	v92 [label="14 71 "]
+	v93 [label="14 13 "]
+	v94 [label="66 4 "]
+	v95 [label="4 89 "]
+	v96 [label="8 4 "]
+	v97 [label="25 26 "]
+	v98 [label="79 77 "]
+	v99 [label="80 77 "]
+	v100 [label="54 53 "]
+	v101 [label="63 65 "]
+	v102 [label="63 64 "]
+	v103 [label="66 67 "]
+
+	v94 -- v103
+	v26 -- v49
+	v7 -- v31
+	v63 -- v84
+	v5 -- v26
+	v37 -- v59
+	v54 -- v82
+	v72 -- v92
+	v24 -- v43
+	v5 -- v21
+	v89 -- v101
+	v52 -- v78
+	v79 -- v94
+	v5 -- v20
+	v79 -- v96
+	v5 -- v24
+	v27 -- v52
+	v81 -- v97
+	v85 -- v100
+	v32 -- v57
+	v41 -- v42
+	v4 -- v5
+	v18 -- v27
+	v48 -- v73
+	v2 -- v4
+	v27 -- v51
+	v44 -- v71
+	v53 -- v80
+	v71 -- v88
+	v52 -- v76
+	v71 -- v86
+	v6 -- v19
+	v5 -- v11
+	v83 -- v98
+	v5 -- v6
+	v65 -- v85
+	v43 -- v64
+	v45 -- v46
+	v21 -- v29
+	v37 -- v38
+	v43 -- v65
+	v5 -- v25
+	v5 -- v15
+	v40 -- v62
+	v5 -- v23
+	v52 -- v77
+	v5 -- v16
+	v44 -- v68
+	v5 -- v22
+	v42 -- v63
+	v23 -- v41
+	v18 -- v34
+	v28 -- v53
+	v79 -- v95
+	v22 -- v40
+	v19 -- v35
+	v5 -- v14
+	v40 -- v61
+	v32 -- v55
+	v24 -- v45
+	v37 -- v60
+	v46 -- v72
+	v54 -- v81
+	v19 -- v30
+	v37 -- v58
+	v44 -- v69
+	v26 -- v50
+	v7 -- v32
+	v58 -- v83
+	v21 -- v39
+	v52 -- v74
+	v29 -- v54
+	v52 -- v75
+	v5 -- v10
+	v5 -- v17
+	v2 -- v3
+	v44 -- v70
+	v72 -- v91
+	v26 -- v48
+	v5 -- v12
+	v71 -- v87
+	v72 -- v93
+	v1 -- v2
+	v5 -- v18
+	v43 -- v67
+	v89 -- v102
+	v32 -- v56
+	v43 -- v66
+	v5 -- v9
+	v36 -- v37
+	v24 -- v44
+	v83 -- v99
+	v5 -- v28
+	v53 -- v79
+	v29 -- v36
+	v72 -- v89
+	v7 -- v33
+	v5 -- v7
+	v5 -- v8
+	v26 -- v47
+	v5 -- v13
+	v72 -- v90
+
+}
