@@ -96,7 +96,7 @@ def bagEm(partitionList, bag):
                 dictOfParts[guy[i]] = []
             dictOfParts[guy[i]].append(bag[i])
         if sorted(dictOfParts.values()) not in partitioned:
-            partitioned.append(sorted(dictOfParts.values()))
+            partitioned.append(sorted(map(sorted,dictOfParts.values())))
     return partitioned
 
 # print bagEm(getAllPartitions([1, 2, 3, 4], 4), [1, 2, 3, 4])
@@ -209,7 +209,7 @@ def sorted_dictionary_to_string(dictionary):
     keys = sorted(dictionary.keys())
     string = ""
     for key in keys:
-        string = string + str(key) + ": " + str(dictionary[key]) + ", "
+        string = string + str(sorted(key)) + ": " + str(dictionary[key]) + ", "
     return "{" + string[:-2] + "}"
     
 def sigOfLeaf(t, treeDecomp, bag, graph, h, k):
@@ -276,7 +276,7 @@ def sigOfIntroduce(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, 
         for refinedPart in refinements: # for refinement in refinements?
             #print "for refinedPart " + str(refinedPart)
             pPrime = remainderP + refinedPart # P'
-            allRefinedFunctions = getAllFunctions(pPrime, h)
+            allRefinedFunctions = getAllFunctions(sorted(pPrime), h)
             #print "all refined functions is "+ str (allRefinedFunctions)
             for guy in allRefinedFunctions: # This is no longer in pseudocode, on purpose?
                 #print "now to check the sum condition in " + str(guy)
@@ -296,13 +296,13 @@ def sigOfIntroduce(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, 
             #print "looking at " + str((pPrime, cPrime)) + " in inherited"
             #print "the del values are"
             #print delValuesChild[(str(pPrime), str(cPrime))]
-            value = delValuesChild[(str(pPrime), sorted_dictionary_to_string(cPrime))] + countSpansSingle(graph, bag, pPrime, v)
+            value = delValuesChild[(str(sorted(map(sorted,pPrime))), sorted_dictionary_to_string(cPrime))] + countSpansSingle(graph, bag, pPrime, v)
             if value < minValue:
                 minValue = value
         if minValue <= k:
-            delValues[(str(sorted(p)), sorted_dictionary_to_string(c))] = minValue
+            delValues[(str(sorted(map(sorted,p))), sorted_dictionary_to_string(c))] = minValue
         else:
-            delValues[(str(sorted(p)), sorted_dictionary_to_string(c))] = INFINITY
+            delValues[(str(sorted(map(sorted,p))), sorted_dictionary_to_string(c))] = INFINITY
         
     return delValues
 
@@ -313,7 +313,7 @@ def is_function_valid(c):
             valid = False
     return valid
 
-def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h):
+def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h, k):
     delValues  = {}
     v = list(set(childBag) - set(bag))[0]
     allStates = generateAllStates(t, treeDecomp, bag, graph, h)
@@ -331,11 +331,11 @@ def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h):
                         newPart.append(copy.deepcopy(secondPart))
                     else:
                         newPart.append(copy.deepcopy(secondPart) + [v])
-                inheritedPartitions.append(newPart)
+                inheritedPartitions.append(map(sorted,newPart))
         # add it in its own part
         temp = copy.deepcopy(p)
         temp.append([v])
-        inheritedPartitions.append(temp)
+        inheritedPartitions.append(map(sorted,temp))
 
         #print "inherited = ", inheritedPartitions        
         for pPrime in inheritedPartitions:
@@ -354,7 +354,7 @@ def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h):
                     #print "partwithoutV= ",partWithoutV
                     #print "cc=", c
                     #print "c=",c[tuple(partWithoutV)]
-                    cPrime[tuple(part)] = c[tuple(partWithoutV)] #it is possible to get incorrect fnc here
+                    cPrime[tuple(part)] = c[tuple(partWithoutV)] #it is possible to get incorrect fnc here?
                     #print "cp=", cPrime
                 else:
                     vSingleton = True
@@ -377,21 +377,21 @@ def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h):
         minValue = INFINITY
         for (pPrime, cPrime) in inheritedSets:
             #print "pPrime", pPrime, "cPrime", cPrime
-            value = delValuesChild[(str(pPrime),sorted_dictionary_to_string(cPrime))]
+            value = delValuesChild[(str(sorted(map(sorted,pPrime))),sorted_dictionary_to_string(cPrime))]
             if value < minValue:
                 minValue = value
 
         if minValue <= k:
-            delValues[str(p),sorted_dictionary_to_string(c)] = minValue
+            delValues[str(sorted(map(sorted,p))),sorted_dictionary_to_string(c)] = minValue
         else:
-            delValues[str(p),sorted_dictionary_to_string(c)] = INFINITY
+            delValues[str(sorted(map(sorted,p))),sorted_dictionary_to_string(c)] = INFINITY
 
     return delValues
             
 #             MAYBE COMPLETED
 
 
-def sigOfJoin(t, treeDecomp, bag, graph, childT1, childT2, childBag1, childBag2, delValuesChild1, delValuesChild2, h):
+def sigOfJoin(t, treeDecomp, bag, graph, childT1, childT2, childBag1, childBag2, delValuesChild1, delValuesChild2, h, k):
     delValues = {} # None, None, bag, graph, None, None, childBag1, childBag2, delValuesChild1, delValuesChild2, h
     allStates = generateAllStates(t, treeDecomp, bag, graph, h)
 
@@ -417,26 +417,26 @@ def sigOfJoin(t, treeDecomp, bag, graph, childT1, childT2, childBag1, childBag2,
         for ((p1,c1),(p2,c2)) in inheritedStates:
             #print "1 del1=", delValuesChild1[str(p1), sorted_dictionary_to_string(c1)]
             #print "2 del2=", delValuesChild2[str(p2),sorted_dictionary_to_string(c2)]
-            value = delValuesChild1[str(p1), sorted_dictionary_to_string(c1)] + delValuesChild2[str(p2),sorted_dictionary_to_string(c2)] - countSpans(graph, bag, p)
+            value = delValuesChild1[str(sorted(map(sorted,p1))), sorted_dictionary_to_string(c1)] + delValuesChild2[str(sorted(map(sorted,p2))),sorted_dictionary_to_string(c2)] - countSpans(graph, bag, p)
             if value < minValue:
                 minValue = value
 
         if minValue <= k:
-            delValues[(str(p),sorted_dictionary_to_string(c))] = minValue
+            delValues[(str(sorted(map(sorted,p))),sorted_dictionary_to_string(c))] = minValue
         else:
-            delValues[(str(p),sorted_dictionary_to_string(c))] = INFINITY
+            delValues[(str(sorted(map(sorted,p))),sorted_dictionary_to_string(c))] = INFINITY
             
     return delValues
 
 
 
 
-graph  = nx.path_graph(25)
+#graph  = nx.path_graph(25)
 # print(generateAllStates(1, 2, [1, 2, 3, 4], graph, 3))
-h = 4
-k = 6
-NONSENSE = "nonsense"
-#delValuesLeaf = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3], graph, h, k)
+#h = 4
+#k = 6
+#NONSENSE = "nonsense"
+#delValuesLeaf = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3,4], graph, h, k)
 #delValuesLeaf2 = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3,4], graph, h, k)
 #print "+++++++FOR LEAF++++++++"
 #for guy in delValuesLeaf:
@@ -446,13 +446,14 @@ NONSENSE = "nonsense"
 #for guy in delValuesIntr:
 #    if delValuesIntr[guy] != INFINITY:
 #        print str(guy) + " | " + str(delValuesIntr[guy])
-#delValuesForget = sigOfForget(NONSENSE, NONSENSE, [1,2,3], graph, NONSENSE, [1,2,3,4], delValuesLeaf, h)
+#delValuesForget = sigOfForget(NONSENSE, NONSENSE, [1,3,4], graph, NONSENSE, [1,2,3,4], delValuesLeaf, h, k)
 #print "+++++++Forget++++++++"
 #for guy in delValuesForget:
 #    if delValuesForget[guy] != INFINITY:
 #        print str(guy) + " | " + str(delValuesForget[guy])
-#delValuesJoin = sigOfJoin(NONSENSE, NONSENSE, [1,2,3,4], graph, NONSENSE, NONSENSE, NONSENSE, NONSENSE, delValuesIntr, delValuesLeaf2, h)
+#delValuesJoin = sigOfJoin(NONSENSE, NONSENSE, [1,2,3,4], graph, NONSENSE, NONSENSE, NONSENSE, NONSENSE, delValuesIntr, delValuesLeaf2, h, k)
 #print "+++++++Join++++++++"
 #for guy in delValuesJoin:
 #    if delValuesJoin[guy] != INFINITY:
 #        print str(guy) + " | " + str(delValuesJoin[guy])
+
