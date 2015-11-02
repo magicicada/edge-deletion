@@ -1,0 +1,4 @@
+for f in *.anonGraph
+do
+	cat $f | tr ' ' '\n' | sort | uniq | wc
+done

@@ -163,6 +163,10 @@ def getAllFunctions(partition, maxH):
     return allFunctions 
 
 # print getAllFunctions([[1,2],[3,4]], 3)
+def printSignatureNicely(sig):
+    (partition, function) = sig
+    return "Partition P:  " + str(partition) + " Function c: " + str(function)
+    
 
 def generateAllStates(t, treeDecomp, bag, graph, h):
     states = []
@@ -170,7 +174,8 @@ def generateAllStates(t, treeDecomp, bag, graph, h):
     # print allPartitions
     # allPartitions = [[allPartitions[3]]]
     for p in allPartitions:
-        # print "p=", p, "h=", h
+        
+        print "p=", p, "h=", h
         allFunctions = getAllFunctions(p, h)
         # print "all functions is"
         # print allFunctions
