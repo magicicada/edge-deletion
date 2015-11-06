@@ -169,18 +169,23 @@ def printSignatureNicely(sig):
     
 
 def generateAllStates(t, treeDecomp, bag, graph, h):
+    # print "Generating all states for " + str(bag)
     states = []
     allPartitions  = bagEm(getAllPartitions(bag, h), bag)
     # print allPartitions
     # allPartitions = [[allPartitions[3]]]
     for p in allPartitions:
         
-        print "p=", p, "h=", h
+        # print "p=", p, "h=", h
         allFunctions = getAllFunctions(p, h)
         # print "all functions is"
         # print allFunctions
         for c in allFunctions:
              states.append((p, c))
+             # print "appending state " + printSignatureNicely((p, c))
+    # print "Finished generating all states"
+    # for state in states:
+        # print "A State! : " + printSignatureNicely(state)
     return states
 
 # print generateAllStates(None, None, [1,2,3,4], None, 3)
@@ -239,6 +244,11 @@ def sigOfLeaf(t, treeDecomp, bag, graph, h, k):
 # G.add_edge(3,2)
 # G.add_edge(3,4)
 # print sigOfLeaf(None, None, [1,2,3,4], G, 3, 2)
+
+
+# def givenSigsGetDelLeaf(t, treeDecomp, bag, graph, h, k, sigs):
+#     for (p, c) in sigs:
+        
 
 def generateAllRefinements(part, v, h):
     #print "in generateAllRef, we've received " + str(part)
@@ -435,13 +445,45 @@ def sigOfJoin(t, treeDecomp, bag, graph, childT1, childT2, childBag1, childBag2,
 
 
 
+tree = nx.DiGraph()
+tree.add_edge('a', 'b')
+tree.add_edge('b', 'c')
+tree.add_edge('c', 'd')
+tree.add_edge('c', 'e')
+bags = {}
+bags['a'] = [1, 2, 3, 5]
+bags['b'] = [1, 2, 3]
+bags['c'] = [1, 2, 3, 4]
+bags['d'] = [1, 2, 3, 4]
+bags['e'] = [1, 2, 3, 4]
 
-#graph  = nx.path_graph(25)
-# print(generateAllStates(1, 2, [1, 2, 3, 4], graph, 3))
-#h = 4
-#k = 6
+graph = nx.Graph()
+graph.add_edge(5, 3)
+graph.add_edge(2, 3)
+graph.add_edge(1, 3)
+graph.add_edge(1, 2)
+graph.add_edge(1, 4)
+
+
+h = 3
+k = 2
+
+leafOrder = ['d', 'e', 'c', 'b', 'a']
+
+# generateAllStates(1, 2, [1, 2, 3, 4], graph, h)
+
 #NONSENSE = "nonsense"
-#delValuesLeaf = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3,4], graph, h, k)
+delValuesLeafD = sigOfLeaf(tree, bags, bags['d'], graph, h, k)
+delValuesLeafE = sigOfLeaf(tree, bags, bags['e'], graph, h, k)
+# for guy in delValuesLeafD:
+#     print printSignatureNicely(guy) + " maps to " + str(delValuesLeafD[guy])
+    
+# del values for the join node
+delValuesC = sigOfJoin('c', tree, bags, graph, 'd', 'e', bags['d'], bags['e'], delValuesLeafD, delValuesLeafE, h, k)
+for guy in delValuesC:
+    print printSignatureNicely(guy) + " maps to " + str(delValuesLeafC[guy])
+
+    
 #delValuesLeaf2 = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3,4], graph, h, k)
 #print "+++++++FOR LEAF++++++++"
 #for guy in delValuesLeaf:
