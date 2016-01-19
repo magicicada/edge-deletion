@@ -14,6 +14,10 @@ def apply_algorithm(graph, nice_decomposition, root, h, k):
 
     return delValues
 
+# Creates a nice tree decomposition from the tree decomposition provided
+# Input - decomp - a tree decomposition
+#       - root - the node for the root of the tree decomposition (and for the nice one)
+# Output - a nice tree decomposition graph
 def get_nice_tree_decomp(decomp, root):
     children = get_all_neighbours(decomp, root)
     make_it_nice(decomp, root, children)
@@ -63,7 +67,7 @@ def make_it_nice(graph, node, children):
     bag = graph.node[node]["label"]
     #print "Fixing vertex", node, "with children", children, "and bag", bag
     if len(children) > 1:
-        #print "vertex",node," is a JOIN because len(children) = ", len(children)
+        print "vertex",node," is a JOIN because len(children) = ", len(children)
         graph.node[node]["kind"] = "JOIN"
         # Introduce more Join nodes if there are too many children (or 2 different children)
         # Otherwise continue down the tree
@@ -119,32 +123,32 @@ def make_it_nice(graph, node, children):
         bag = bag.replace('"', '').strip().split(" ")
         #print "b=",bag
         #print "c=",child_bag
-        introduced = []
-        forgotten = []
+        introduced = [] #introduced = [vertex for vertex in child_bag if vertex not in bag]
+        forgotten = [] #forgotten = [vertex for vertex in bag if vertex not in child_bag]
         for vertex in bag:
             if vertex not in child_bag:
-                introduced.append(vertex)
+                forgotten.append(vertex)
         for vertex in child_bag:
             if vertex not in bag:
-                forgotten.append(vertex)
+                introduced.append(vertex)
         # Add Introduce and Forget nodes as necessary
         graph.remove_edge(node,children[0])
         cursor = node
         current_bag = bag
-        for vertex in introduced:
-            graph.node[cursor]["kind"] = "INTRODUCE"
-            vertex_num = graph.number_of_nodes()+1
-            current_bag = [item for item in current_bag if item != vertex]
-            graph.add_node(vertex_num, label=" ".join(map(str,current_bag)))
-            #print "Node", cursor, "is introduce; with child bag", current_bag, "and child",vertex_num
-            graph.add_edge(cursor, vertex_num)
-            cursor = vertex_num
         for vertex in forgotten:
             graph.node[cursor]["kind"] = "FORGET"
             vertex_num = graph.number_of_nodes()+1
-            current_bag.append(vertex)
+            current_bag = [item for item in current_bag if item != vertex]
             graph.add_node(vertex_num, label=" ".join(map(str,current_bag)))
-            #print "Node", cursor, "is forget; with child bag", current_bag, "and child",vertex_num
+            print "Node", cursor, "is forget; with child bag", current_bag, "and child",vertex_num
+            graph.add_edge(cursor, vertex_num)
+            cursor = vertex_num
+        for vertex in introduced:
+            graph.node[cursor]["kind"] = "INTRODUCE"
+            vertex_num = graph.number_of_nodes()+1
+            current_bag.append(vertex)
+            graph.add_node(vertex_num, label=" ".join(map(str,current_bag)), kind="")
+            print "Node", cursor, "is introduce; with child bag", current_bag, "and child",vertex_num
             graph.add_edge(cursor, vertex_num)
             cursor = vertex_num
         graph.add_edge(cursor, children[0])
@@ -166,10 +170,38 @@ def get_all_neighbours(graph, node):
 def get_all_children(graph, node, parent):
     neighbours = get_all_neighbours(graph, node)
     return [vertex for vertex in neighbours if vertex != parent]
+
 '''
-tree = nx.read_dot("TreeDecomplinks2010.edges-5.anonGraph.dgf.txt")
-graph = gf.read_edges_from_file("sampleGraphs/links2010.edges-5.anonGraph", " ")
-delValues = apply_algorithm(graph, tree, 4,2)
-for guy in delValues:
-    print guy, " | ", delValues[guy]'''
+tree = nx.read_dot("test.txt")
+root = tree.nodes()[0]
+nice_tree = get_nice_tree_decomp(tree, root)
+print "MADE NICE"
+kind = ""
+for node in nice_tree.nodes():
+    try:
+        kind = nice_tree.node[node]["kind"]
+    except:
+        pass
+    print node, nice_tree.node[node]["label"], kind
+    
+graph = gf.read_edges_from_file("test2.txt", " ")
+print "READ"
+for node in nice_tree.nodes():
+    if len(get_all_neighbours(nice_tree, node)) == 0:
+        nice_tree.remove_node(node)
+
+for node in nice_tree.nodes():
+    if len(get_all_neighbours(nice_tree, node)) != 0:
+        try:
+            kind = nice_tree.node[node]["kind"]
+        except:
+            pass
+        print node, nice_tree.node[node]["label"], kind, get_all_neighbours(nice_tree, node)
+'''
+#print get_all_neighbours(nice_tree, nice_tree.node[7])
+#delValues = apply_algorithm(graph, tree, root, 3,7)
+#print "-------------------------=========="
+#for guy in delValues:
+#    if delValues[guy] != INFINITY:
+#        print guy, " | ", delValues[guy]
 
