@@ -85,9 +85,10 @@ def get_del_values(graph, decomp, node, children, h, k):
         #print "Getting delValues for", kind, "node", node, "with bag", bag, "and children", children
         delValues = ed.sigOfLeaf(None, None, bag, graph, h, k)
         #for guy in delValues:
-            #if delValues[guy] != INFINITY:
-                #print str(guy) + " | " + str(delValues[guy])
+        #    if delValues[guy] != INFINITY:
+        #        print str(guy) + " | " + str(delValues[guy])
 
+    # This should not be needed anymore
     else:
         delValues = get_del_values(graph, decomp, children[0], get_all_children(decomp, children[0], node),h,k)
         #print "This one is a duplicate"
@@ -158,26 +159,26 @@ def make_it_nice(graph, node, children):
         bag = bag.strip().split(" ")
         #print "b=",bag
         #print "c=",child_bag
-        introduced = [vertex for vertex in child_bag if vertex not in bag]
-        forgotten = [vertex for vertex in bag if vertex not in child_bag]
+        forgotten = [vertex for vertex in child_bag if vertex not in bag]
+        introduced = [vertex for vertex in bag if vertex not in child_bag]
         # Add Introduce and Forget nodes as necessary
         graph.remove_edge(node,children[0])
         cursor = node
         current_bag = bag
-        for vertex in forgotten:
-            graph.node[cursor]["kind"] = "FORGET"
-            vertex_num = graph.number_of_nodes()+1
-            current_bag = [item for item in current_bag if item != vertex]
-            graph.add_node(vertex_num, label=" ".join(map(str,current_bag)), kind="")
-            #print "Node", cursor, "is forget; with child bag", current_bag, "and child",vertex_num
-            graph.add_edge(cursor, vertex_num)
-            cursor = vertex_num
         for vertex in introduced:
             graph.node[cursor]["kind"] = "INTRODUCE"
             vertex_num = graph.number_of_nodes()+1
-            current_bag.append(vertex)
+            current_bag = [item for item in current_bag if item != vertex]
             graph.add_node(vertex_num, label=" ".join(map(str,current_bag)), kind="")
             #print "Node", cursor, "is introduce; with child bag", current_bag, "and child",vertex_num
+            graph.add_edge(cursor, vertex_num)
+            cursor = vertex_num
+        for vertex in forgotten:
+            graph.node[cursor]["kind"] = "FORGET"
+            vertex_num = graph.number_of_nodes()+1
+            current_bag.append(vertex)
+            graph.add_node(vertex_num, label=" ".join(map(str,current_bag)), kind="")
+            #print "Node", cursor, "is forget; with child bag", current_bag, "and child",vertex_num
             graph.add_edge(cursor, vertex_num)
             cursor = vertex_num
         graph.add_edge(cursor, children[0])
