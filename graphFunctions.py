@@ -71,16 +71,26 @@ def is_edge_set_disconnected(comp_size_limit, edges):
     # Check what the maximum component size is
     return maximum_at_most(graph, comp_size_limit)
 
+# Finds the degrees of the two vertices connected by given_edge. The degrees
+# are returned as a two-element array.
+# Input - the edge whose end-vertices we are interested in and a collection of all edges
+# Output - Two-element array, containing two integers - the degrees of the two vertices
 def find_degrees_of_end_vertices(given_edge, all_edges):
     degrees = [0,0]
-    for i in range(1):
-        vetrex = given_edge[i]
-        other_vertex = given_edge[1-i]
-        for edge in all_edges:
-            if edge[0] == vetrex or edge[1] == vertex:
-                degrees[i] += 1
+    vetrex = given_edge[0]
+    other_vertex = given_edge[1]
+    # Loop over all edges searching for the vertices we are interested in
+    for edge in all_edges:
+        if edge[0] == vetrex or edge[1] == vertex:
+            degrees[0] += 1
+        if edge[0] == other_vertex or edge[1] == other_vertex:
+            degrees[1] += 1
     return degrees
 
+# Finds the minimum of the degrees of the two vertices connected by given_edge.
+# A single integer is returned.
+# Input - the edge whose end-vertices we are interested in and a collection of all edges
+# Output - An integer - the minimum of the degrees of the two end-vertices
 def min_degree_of_end_vertices(given_edge, all_edges):
     degrees = find_degrees_of_end_vertices(given_edge, all_edges)
     if degrees[0] < degrees[1]:
@@ -88,6 +98,10 @@ def min_degree_of_end_vertices(given_edge, all_edges):
     else:
         return degrees[1]
 
+# Finds the average of the degrees of the two vertices connected by given_edge.
+# A single integer is returned.
+# Input - the edge whose end-vertices we are interested in and a collection of all edges
+# Output - An integer - the average of the degrees of the two end-vertices
 def average_degree_of_end_vertices(given_edge, all_edges):
     degrees = find_degrees_of_end_vertices(given_edge, all_edges)
     return (degrees[0] + degrees[1]) /2

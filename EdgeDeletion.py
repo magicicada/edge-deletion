@@ -238,14 +238,19 @@ def sigOfLeaf(t, treeDecomp, bag, graph, h, k):
 def generateAllRefinements(part, v, h):
     #print "in generateAllRef, we've received " + str(part)
     if part == [v]:
-        return []
+        return [[]]
     toPartition = [x for x in part if x != v]
     #print "in generateAllRef, we need to partition " + str(toPartition)
     return bagEm(getAllPartitions(toPartition, h), toPartition)
 
-# print generateAllRefinements([1,2,3,4],3,3)
+#print generateAllRefinements([1,2,3,4],3,3)
 
 def sigOfIntroduce(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h, k):
+    # Safety check:
+    if len(bag) - len(childBag) != 1:
+        print "ERROR, this is not an Introduce node"
+        exit
+    
     delValues  = {}
     #print "doing the introduce node"
     #print "calculating v"
@@ -271,8 +276,7 @@ def sigOfIntroduce(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, 
         #print "remainderP is " + str(remainderP)
         #print "Generating refinements"
         refinements  =  generateAllRefinements(Xr, v, h)
-        #print "for each refinement of "
-        #print refinements
+        #print "for each refinement of " + str(refinements)
         for refinedPart in refinements: # for refinement in refinements?
             #print "for refinedPart " + str(refinedPart)
             pPrime = remainderP + refinedPart # P'
@@ -282,12 +286,18 @@ def sigOfIntroduce(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, 
                 #print "now to check the sum condition in " + str(guy)
                 # check sum condition: error in pseudocode here?TODO
                 sumOf = 0
+                okay = False
                 for entry in refinedPart:
                     #print "adding in the function for " + str(entry) + " which is " + str(guy[tuple(entry)])
                     sumOf = sumOf + guy[tuple(entry)]
                 #print "total sum is " + str(sumOf)
                 #print "which we will compare to " + str(c[tuple(Xr)]-1)
                 if sumOf == c[tuple(Xr)]-1:
+                    okay = True
+                for entry in remainderP:
+                    if c[tuple(entry)] != guy[tuple(entry)]:
+                        okay = False
+                if okay:                    
                     inherited.append((sorted(pPrime), guy))
         #print "for state " + str((p, c)) + " the inherited list is "
         #print str(inherited)
@@ -295,10 +305,11 @@ def sigOfIntroduce(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, 
         for (pPrime, cPrime) in inherited: # t' no longer used?
             #print "looking at " + str((pPrime, cPrime)) + " in inherited"
             #print "the del values are"
-            #print delValuesChild[(str(pPrime), str(cPrime))]
-            value = delValuesChild[(str(sorted(map(sorted,pPrime))), sorted_dictionary_to_string(cPrime))] + countSpansSingle(graph, bag, pPrime, v)
+            #print delValuesChild[(str(pPrime), str(cPrime))]           #################################
+            value = delValuesChild[(str(sorted(map(sorted,pPrime))), sorted_dictionary_to_string(cPrime))] + countSpansSingle(graph, bag, p, v)
             if value < minValue:
                 minValue = value
+
         if minValue <= k:
             delValues[(str(sorted(map(sorted,p))), sorted_dictionary_to_string(c))] = minValue
         else:
@@ -314,6 +325,11 @@ def is_function_valid(c):
     return valid
 
 def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h, k):
+    # Safety check:
+    if len(bag) - len(childBag) != -1:
+        print "ERROR, this is not a Forget node"
+        exit
+
     delValues  = {}
     v = list(set(childBag) - set(bag))[0]
     allStates = generateAllStates(t, treeDecomp, bag, graph, h)
@@ -375,11 +391,15 @@ def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h, 
                     #print "State not valid: ", pPrime, cPrime
 
         minValue = INFINITY
+        setOfInterest = {}
         for (pPrime, cPrime) in inheritedSets:
             #print "pPrime", pPrime, "cPrime", cPrime
             value = delValuesChild[(str(sorted(map(sorted,pPrime))),sorted_dictionary_to_string(cPrime))]
             if value < minValue:
                 minValue = value
+                setOfInterest = (pPrime, cPrime)
+
+        #print "setOfInterest ", setOfInterest, "for state: ", (p, c)
 
         if minValue <= k:
             delValues[str(sorted(map(sorted,p))),sorted_dictionary_to_string(c)] = minValue
@@ -392,6 +412,7 @@ def sigOfForget(t, treeDecomp, bag, graph, childT, childBag, delValuesChild, h, 
 
 
 def sigOfJoin(t, treeDecomp, bag, graph, childT1, childT2, childBag1, childBag2, delValuesChild1, delValuesChild2, h, k):
+
     delValues = {} # None, None, bag, graph, None, None, childBag1, childBag2, delValuesChild1, delValuesChild2, h
     allStates = generateAllStates(t, treeDecomp, bag, graph, h)
 
@@ -436,8 +457,8 @@ def sigOfJoin(t, treeDecomp, bag, graph, childT1, childT2, childBag1, childBag2,
 #h = 4
 #k = 6
 #NONSENSE = "nonsense"
-#delValuesLeaf = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3,4], graph, h, k)
-#delValuesLeaf2 = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3,4], graph, h, k)
+#delValuesLeaf = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3], graph, h, k)
+#delValuesLeaf2 = sigOfLeaf(NONSENSE, NONSENSE, [1,2,3], graph, h, k)
 #print "+++++++FOR LEAF++++++++"
 #for guy in delValuesLeaf:
 #    print str(guy) + " | " + str(delValuesLeaf[guy])
@@ -446,7 +467,7 @@ def sigOfJoin(t, treeDecomp, bag, graph, childT1, childT2, childBag1, childBag2,
 #for guy in delValuesIntr:
 #    if delValuesIntr[guy] != INFINITY:
 #        print str(guy) + " | " + str(delValuesIntr[guy])
-#delValuesForget = sigOfForget(NONSENSE, NONSENSE, [1,3,4], graph, NONSENSE, [1,2,3,4], delValuesLeaf, h, k)
+#delValuesForget = sigOfForget(NONSENSE, NONSENSE, [1,3], graph, NONSENSE, [1,2,3], delValuesLeaf, h, k)
 #print "+++++++Forget++++++++"
 #for guy in delValuesForget:
 #    if delValuesForget[guy] != INFINITY:
